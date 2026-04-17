@@ -41,7 +41,7 @@ education:
     - id: uf
       institution: University of Florida $|$ Gainesville
       date_range: Aug. 2023 -- May 2027
-      degree: Bachelor of Science in Computer Science, Minors: Statistics, Electrical Engineering
+      degree: "Bachelor of Science in Computer Science, Minors: Statistics, Electrical Engineering"
       detail: "GPA: 4.0"
       bullets:
         - id: certs
@@ -89,7 +89,7 @@ experience:
         - id: nasa_autoencoder
           text: "Reduced manual anomaly detection time by \\textbf{12 hours} by assisting in the development of an \\textbf{autoencoder} using \\textbf{PyTorch} to detect anomalies for ISS exercise machine sensor faults, processing over \\textbf{11,000} data points per exercise set in \\textbf{large-scale time-series data}."
         - id: nasa_dashboard
-          text: "Engineering a comprehensive dashboard using \\textbf{Dash, Plotly, and SciPy}, implemented a \\textbf{CI/CD pipeline} with \\textbf{PyTest} and GitLab runners to ensure code quality and deployed an \\textbf{end-to-end data pipeline} with \\textbf{Dagster}."
+          text: "Engineered a comprehensive dashboard using \\textbf{Dash, Plotly, and SciPy}, implemented a \\textbf{CI/CD pipeline} with \\textbf{PyTest} and GitLab runners to ensure code quality and deployed an \\textbf{end-to-end data pipeline} with \\textbf{Dagster}."
     - id: rinker_ra
       enabled: true
       title: Undergraduate Research Assistant
@@ -151,7 +151,7 @@ skills_achievements:
     - id: languages
       enabled: true
       category: Languages
-      text: "Python, Typescript, SQL, C++, R"
+      text: "Python, TypeScript, SQL, C++, R"
     - id: awards
       enabled: true
       category: Awards

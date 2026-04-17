@@ -107,8 +107,12 @@ def cmd_diff(repo_path: Path, args) -> None:
     try:
         old_tex = repo.git.show(f"{ref_a}:resume.tex")
         new_tex = repo.git.show(f"{ref_b}:resume.tex")
-    except Exception as e:
-        console.print(f"[red]Error extracting versions: {e}[/]")
+    except Exception:
+        if args.branch:
+            console.print(f"[red]Branch 'tailor/{args.branch}' not found.[/]")
+            console.print("[dim]List available branches with: resume-cli.py branches[/]")
+        else:
+            console.print(f"[red]Could not extract resume versions from those commits.[/]")
         return
 
     # Generate diff using custom differ (handles resume LaTeX commands properly)
@@ -171,7 +175,8 @@ def cmd_compare(repo_path: Path, _args) -> None:
         tailor_refs.append((canonical, str(ref)))
 
     if not tailor_refs:
-        console.print("[yellow]No tailor branches found[/]")
+        console.print("[yellow]No tailor branches found.[/]")
+        console.print("[dim]Create one with: git checkout -b tailor/company-name[/]")
         return
 
     console.print(f"\n[bold cyan]Resume Tailoring Comparison[/] — {len(tailor_refs)} branches\n")

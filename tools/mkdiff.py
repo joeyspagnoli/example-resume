@@ -1,18 +1,18 @@
 """Generate a visual diff PDF between two resume versions.
 
-Strategy: Use the NEW resume's structure as the skeleton, and show
-deleted content (from OLD) in red at the positions where it was removed.
-New content is shown in blue.
+Strategy: Split each section into individual entries (jobs, projects, skill lines),
+diff at the entry level, and color entire entries as added/removed/changed.
 """
 import difflib
+import re
 import sys
 from pathlib import Path
 
 
-def extract_sections(tex: str) -> dict[str, list[str]]:
-    """Extract content by section from a resume .tex file."""
+def extract_sections(tex: str) -> dict[str, str]:
+    """Extract raw text by section from a resume .tex file."""
     sections: dict[str, list[str]] = {}
-    current = "preamble"
+    current = "PREAMBLE"
     in_doc = False
 
     for line in tex.split("\n"):
@@ -25,7 +25,6 @@ def extract_sections(tex: str) -> dict[str, list[str]]:
         if not in_doc:
             continue
         if stripped.startswith("%-"):
-            # Section marker like %-----------EXPERIENCE-----------
             for name in ("HEADING", "EDUCATION", "EXPERIENCE", "PROJECTS", "SKILLS AND ACHIEVEMENTS"):
                 if name in stripped:
                     current = name
@@ -33,70 +32,109 @@ def extract_sections(tex: str) -> dict[str, list[str]]:
             continue
         sections.setdefault(current, []).append(line)
 
-    return sections
+    return {k: "\n".join(v) for k, v in sections.items()}
 
 
-def color_wrap(line: str, color: str) -> str:
-    """Wrap a content line in a color, handling resume LaTeX commands."""
-    stripped = line.strip()
-    if not stripped:
-        return line
+def split_entries(section_text: str) -> list[str]:
+    """Split a section into individual entries (job blocks, project blocks, etc.).
 
-    # Don't color structural/list commands at all
-    structural = (
-        "\\resumeSubHeadingListStart", "\\resumeSubHeadingListEnd",
-        "\\resumeItemListStart", "\\resumeItemListEnd",
-        "\\section{", "\\begin{", "\\end{",
-    )
-    if any(stripped.startswith(cmd) for cmd in structural):
-        return line
-
-    # For \resumeItem{...}, color the inner content only
-    if stripped.startswith("\\resumeItem{") and stripped.endswith("}"):
-        inner = stripped[len("\\resumeItem{"):-1]
-        return "\\resumeItem{{\\color{" + color + "}" + inner + "}}"
-
-    # For \item lines and everything else, prepend a color switch.
-    # We use \color{} at the start of the line (no grouping) so it doesn't
-    # interfere with brace matching in the original content.
-    # The color resets at the next \item or structural command.
-    return "\\color{" + color + "}" + stripped + "\\color{black}"
-
-
-def diff_section_lines(old_lines: list[str], new_lines: list[str]) -> list[str]:
-    """Diff two sections and return annotated lines.
-
-    Groups consecutive deletions and insertions so all red (deleted)
-    lines appear together, followed by all blue (added) lines.
+    Each entry starts with an \\item line that has \\textbf (a title line).
+    Everything until the next such line belongs to the same entry.
     """
-    result = []
-    matcher = difflib.SequenceMatcher(None, old_lines, new_lines, autojunk=False)
-    opcodes = matcher.get_opcodes()
+    lines = section_text.split("\n")
+    entries: list[str] = []
+    current: list[str] = []
 
-    # Merge consecutive replace/delete/insert into grouped blocks
-    i = 0
-    while i < len(opcodes):
-        tag, i1, i2, j1, j2 = opcodes[i]
+    for line in lines:
+        stripped = line.strip()
+        # Detect entry boundaries: \item with \textbf (title lines) or \resumeSubheading
+        is_title = (
+            (stripped.startswith("\\item") and "\\textbf{" in stripped)
+            or stripped.startswith("\\resumeSubheading{")
+        )
+        # Also: structural commands that wrap entries
+        is_struct = stripped in (
+            "\\resumeSubHeadingListStart", "\\resumeSubHeadingListEnd",
+            "\\section{\\textbf{Education}}", "\\section{\\textbf{Experience}}",
+            "\\section{\\textbf{Projects}}", "\\section{\\textbf{Skills and Achievements}}",
+        ) or stripped.startswith("\\section{")
 
-        if tag == "equal":
-            result.extend(new_lines[j1:j2])
-            i += 1
+        if is_struct:
+            # Flush current entry
+            if current:
+                entries.append("\n".join(current))
+                current = []
+            entries.append(line)
+        elif is_title:
+            # Start new entry
+            if current:
+                entries.append("\n".join(current))
+            current = [line]
         else:
-            # Collect all consecutive non-equal ops
-            del_lines = []
-            add_lines = []
-            while i < len(opcodes) and opcodes[i][0] != "equal":
-                t, a1, a2, b1, b2 = opcodes[i]
-                if t in ("replace", "delete"):
-                    del_lines.extend(old_lines[a1:a2])
-                if t in ("replace", "insert"):
-                    add_lines.extend(new_lines[b1:b2])
-                i += 1
-            # Emit all deletions first (red), then all additions (blue)
-            for line in del_lines:
-                result.append(color_wrap(line, "diffdel"))
-            for line in add_lines:
-                result.append(color_wrap(line, "blue"))
+            current.append(line)
+
+    if current:
+        entries.append("\n".join(current))
+
+    return entries
+
+
+def color_entry(entry: str, color: str) -> str:
+    """Color all content lines in an entry, leaving structural commands untouched."""
+    lines = entry.split("\n")
+    result = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            result.append(line)
+            continue
+
+        structural = (
+            "\\resumeSubHeadingListStart", "\\resumeSubHeadingListEnd",
+            "\\resumeItemListStart", "\\resumeItemListEnd",
+            "\\section{",
+        )
+        if any(stripped.startswith(cmd) for cmd in structural):
+            result.append(line)
+            continue
+
+        # For \resumeItem{content}, wrap content in \textcolor
+        if stripped.startswith("\\resumeItem{") and stripped.endswith("}"):
+            inner = stripped[len("\\resumeItem{"):-1]
+            result.append(f"  \\resumeItem{{\\textcolor{{{color}}}{{{inner}}}}}")
+            continue
+
+        # For \item lines with complex brace patterns, use \color scoping
+        if stripped.startswith("\\item"):
+            result.append(f"{{\\color{{{color}}}{stripped}}}")
+            continue
+
+        # For org/company lines like \textbf{Company | Location}
+        result.append(f"{{\\color{{{color}}}{stripped}}}")
+
+    return "\n".join(result)
+
+
+def diff_entries(old_entries: list[str], new_entries: list[str]) -> list[str]:
+    """Diff two lists of entries and return colored output."""
+    matcher = difflib.SequenceMatcher(None, old_entries, new_entries, autojunk=False)
+    result: list[str] = []
+
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            result.extend(new_entries[j1:j2])
+        elif tag == "replace":
+            # Show old entries in red, then new in blue
+            for entry in old_entries[i1:i2]:
+                result.append(color_entry(entry, "diffdel"))
+            for entry in new_entries[j1:j2]:
+                result.append(color_entry(entry, "diffadd"))
+        elif tag == "delete":
+            for entry in old_entries[i1:i2]:
+                result.append(color_entry(entry, "diffdel"))
+        elif tag == "insert":
+            for entry in new_entries[j1:j2]:
+                result.append(color_entry(entry, "diffadd"))
 
     return result
 
@@ -109,32 +147,40 @@ def make_diff_tex(old_tex: str, new_tex: str) -> str:
     preamble_end = new_tex.find("\\begin{document}")
     preamble = new_tex[:preamble_end]
 
-    # Add diff colors to preamble
-    preamble += """
-\\usepackage{xcolor}
-\\definecolor{diffdel}{RGB}{200,30,30}
-\\definecolor{blue}{RGB}{0,40,200}
+    # Replace color package with xcolor (superset, needed for \textcolor and \definecolor)
+    preamble = preamble.replace(
+        r"\usepackage[usenames,dvipsnames]{color}",
+        r"\usepackage[usenames,dvipsnames]{xcolor}",
+    )
+    # Add diff color definitions
+    preamble += r"""
+\definecolor{diffdel}{RGB}{200,30,30}
+\definecolor{diffadd}{RGB}{0,50,200}
 
 """
 
     body_parts = ["\\begin{document}", "\\vspace*{-0.45in}", ""]
 
-    # Process each section in the order they appear in the new resume
-    all_section_names = list(new_sections.keys())
-    # Add any sections only in old
-    for name in old_sections:
-        if name not in all_section_names:
-            all_section_names.append(name)
+    # Use heading from NEW version as-is (contact info doesn't need diffing)
+    if "HEADING" in new_sections:
+        body_parts.append("%-----------HEADING-----------")
+        body_parts.append(new_sections["HEADING"])
+        body_parts.append("")
 
-    for section_name in all_section_names:
-        old_lines = old_sections.get(section_name, [])
-        new_lines = new_sections.get(section_name, [])
+    # Diff each content section
+    for section_name in ("EDUCATION", "EXPERIENCE", "PROJECTS", "SKILLS AND ACHIEVEMENTS"):
+        old_text = old_sections.get(section_name, "")
+        new_text = new_sections.get(section_name, "")
 
-        if section_name != "preamble":
-            # Re-emit the section comment marker
-            body_parts.append(f"%-----------{section_name}-----------")
+        body_parts.append(f"%-----------{section_name}-----------")
 
-        diffed = diff_section_lines(old_lines, new_lines)
+        if not old_text and not new_text:
+            continue
+
+        old_entries = split_entries(old_text)
+        new_entries = split_entries(new_text)
+
+        diffed = diff_entries(old_entries, new_entries)
         body_parts.extend(diffed)
         body_parts.append("")
 

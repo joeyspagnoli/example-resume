@@ -103,6 +103,14 @@ def render_projects(data: dict) -> list[str]:
     return lines
 
 
+def escape_latex(text: str) -> str:
+    """Escape special LaTeX characters in plain text (not in LaTeX commands)."""
+    # Only escape & and % — other specials are unlikely in resume YAML values,
+    # and backslash-commands like \textbf should pass through.
+    text = text.replace("&", "\\&")
+    return text
+
+
 def render_skills(data: dict) -> list[str]:
     lines = [
         "%-----------SKILLS AND ACHIEVEMENTS-----------",
@@ -112,7 +120,8 @@ def render_skills(data: dict) -> list[str]:
     for listing in data["skills_achievements"]["listings"]:
         if not listing.get("enabled", True):
             continue
-        lines.append(f"  \\item{{\\textbf{{{listing['category']}}}: {listing['text']}}}")
+        cat = escape_latex(listing["category"])
+        lines.append(f"  \\item{{\\textbf{{{cat}}}: {listing['text']}}}")
     lines.extend(["\\resumeSubHeadingListEnd", ""])
     return lines
 
