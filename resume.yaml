@@ -1,0 +1,158 @@
+schema_version: 1
+lock_rules:
+  section_order:
+    - education
+    - experience
+    - projects
+    - skills_achievements
+  section_headings:
+    education: Education
+    experience: Experience
+    projects: Projects
+    skills_achievements: Skills and Achievements
+  non_editable_sections:
+    - personal
+    - education
+layout:
+  margin_in: 0.5
+  top_vspace_in: -0.45
+  section_heading_font_size_pt: 13.0
+  section_heading_line_height_pt: 15.0
+  section_spacing_before_pt: 1.0
+  section_spacing_after_pt: 1.0
+  subheading_itemsep_pt: 2.0
+  bullet_itemsep_pt: 1.0
+personal:
+  section_id: personal
+  name: Jane Doe
+  phone: 555-123-4567
+  email: jane.doe@university.edu
+  links:
+    - id: linkedin
+      label: linkedin.com/in/jane-doe
+      url: https://www.linkedin.com/in/jane-doe/
+    - id: github
+      label: github.com/janedoe
+      url: https://github.com/janedoe
+education:
+  section_id: education
+  heading: Education
+  entries:
+    - id: uf
+      institution: University of Florida $|$ Gainesville
+      date_range: Aug. 2023 -- May 2027
+      degree: Bachelor of Science in Computer Science, Minors: Statistics, Electrical Engineering
+      detail: "GPA: 4.0"
+      bullets:
+        - id: certs
+          text: Certificates in AI Fundamentals and Applications and Data Analytics
+experience:
+  section_id: experience
+  heading: Experience
+  listings:
+    - id: ge_appliances
+      enabled: true
+      title: AI Solutions Engineer Intern
+      date_range: Jan. 2026 -- Present
+      organization: Fortune 500 Appliance Company $|$ Louisville, KY
+      bullets:
+        - id: ge_agentic_qa
+          text: "Built an \\textbf{Agentic} QA Review application whose Director agent orchestrates specialized sub-agents across codebase and webapp reviews to generate \\textbf{bug reports, test plans, and repo specs}."
+        - id: ge_pr_gate
+          text: "Created a PR QA gate with \\textbf{GitHub Agentic Workflows} in \\textbf{GitHub Actions} that reviews changed Python files and all files in a \\textbf{1-hop blast radius}, posts a bug report and test plan, and blocks merges on \\textbf{Critical/High} findings."
+    - id: ai_scholars
+      enabled: true
+      title: AI Scholars Researcher
+      date_range: Aug. 2025 -- Present
+      organization: School of Construction Management $|$ University of Florida
+      bullets:
+        - id: ai_scholars_pub
+          text: "Published research in the \\textbf{UF Journal of Undergraduate Research} on using \\textbf{machine learning} to predict whether safety warning signals are audible or masked in 4-second construction-noise clips."
+        - id: ai_scholars_pipeline
+          text: "Built an \\textbf{end-to-end audio ML pipeline} that preprocessed construction-noise clips, synthesized warning signals, generated labeled mixtures, derived acoustic features and mel-spectrograms, and trained models to detect masked safety alarms."
+    - id: ifas_sysadmin
+      enabled: true
+      title: System Administrator Intern
+      date_range: May 2025 -- Present
+      organization: IFAS $|$ University of Florida
+      bullets:
+        - id: ifas_faculty
+          text: "Managed technology needs for \\textbf{25+ faculty}, providing technical support and leading system maintenance, imaging, and deployment to ensure seamless technology integration and reliability."
+        - id: ifas_gpo
+          text: "Created a dedicated laptop \\textbf{OU} in \\textbf{Active Directory} and linked a custom \\textbf{GPO} to automate biweekly maintenance, running Dell Command Update and Windows security updates every other Sunday."
+    - id: nasa_jsc
+      enabled: true
+      title: AI Engineer Intern
+      date_range: Jun. 2025 -- Aug. 2025
+      organization: Government Contractor $|$ NASA Johnson Space Center (JSC)
+      bullets:
+        - id: nasa_autoencoder
+          text: "Reduced manual anomaly detection time by \\textbf{12 hours} by assisting in the development of an \\textbf{autoencoder} using \\textbf{PyTorch} to detect anomalies for ISS exercise machine sensor faults, processing over \\textbf{11,000} data points per exercise set in \\textbf{large-scale time-series data}."
+        - id: nasa_dashboard
+          text: "Engineering a comprehensive dashboard using \\textbf{Dash, Plotly, and SciPy}, implemented a \\textbf{CI/CD pipeline} with \\textbf{PyTest} and GitLab runners to ensure code quality and deployed an \\textbf{end-to-end data pipeline} with \\textbf{Dagster}."
+    - id: rinker_ra
+      enabled: true
+      title: Undergraduate Research Assistant
+      date_range: Oct. 2024 -- May 2025
+      organization: School of Construction Management $|$ University of Florida
+      bullets:
+        - id: rinker_ctgan
+          text: "Developed a \\textbf{CTGAN synthesizer} using \\textbf{SDV} and Python to generate high-fidelity synthetic data, enabling initial \\textbf{neural network training} in the absence of real-world data."
+        - id: rinker_variables
+          text: "Identified and analyzed key \\textbf{physiological (5--8)} and \\textbf{environmental (12--13)} variables to inform early model development for predicting heat-related illness risk in construction settings."
+projects:
+  section_id: projects
+  heading: Projects
+  listings:
+    - id: experience_curator
+      enabled: true
+      title: ExperienceCurator AI
+      tech_stack: Python, FastAPI, PostgreSQL, pgvector, ADK, Docker, React/TypeScript
+      date_range: Dec. 2025 -- Present
+      bullets:
+        - id: ec_rag
+          text: "Built a \"career memory\" system with \\textbf{agent-orchestrated RAG workflows} to ingest docs and codebases, normalize content, generate embeddings, and serve evidence-grounded answers through a FastAPI REST API with pgvector retrieval."
+        - id: ec_multiagent
+          text: "Implemented \\textbf{multi-agent} resume tailoring and interview preparation tools, reducing resume customization time by \\textbf{30\\%} through \\textbf{citation-grounded} bullet suggestions and generating concise, sourced answers to user-created interview questions."
+    - id: evochess
+      enabled: true
+      title: EvoChess
+      tech_stack: Python, PyTorch, MLflow, Dagster, AWS S3, Docker, Google Cloud Run
+      date_range: Mar. 2025 -- Apr. 2025
+      bullets:
+        - id: evochess_pipeline
+          text: "Orchestrated an \\textbf{automated MLOps pipeline} with Dagster to ETL chess game data from Lichess into AWS S3 for \\textbf{CNN model} training with PyTorch, and deployed the final model as a containerized API using Docker and Google Cloud Run."
+        - id: evochess_cnn
+          text: "Trained a Convolutional Neural Network in PyTorch on a filtered dataset of \\textbf{9,000,000+ games rated 2000+ elo}, engineering a data processing workflow to predict optimal move sequences from any given board state."
+    - id: resource_optimization
+      enabled: true
+      title: Data-Driven Resource Optimization
+      tech_stack: Python, Matplotlib, Scikit-learn
+      date_range: Jul. 2024 -- Aug. 2024
+      bullets:
+        - id: resource_gradient
+          text: "Developed a \\textbf{gradient descent} algorithm to minimize Mean Squared Error (MSE) for predicting event resource needs, achieving an \\textbf{R\\textsuperscript{2} score of 0.958} with Scikit-learn and reducing costs by \\textbf{20\\%} with an \\textbf{85\\%} decrease in waste."
+skills_achievements:
+  section_id: skills_achievements
+  heading: Skills and Achievements
+  listings:
+    - id: ml_ai
+      enabled: true
+      category: ML/AI
+      text: "PyTorch, Scikit-learn, LangChain, Google ADK, CrewAI, RAG, CNNs, Autoencoders, Time-Series Analysis"
+    - id: production
+      enabled: true
+      category: "Production & MLOps"
+      text: "FastAPI, Docker, Dagster, MLflow, Github Actions CI/CD, OAuth 2.0, PyTest, Git, Linux"
+    - id: cloud_data
+      enabled: true
+      category: "Cloud & Data"
+      text: "Terraform, AWS, GCP, PostgreSQL (pgvector), MongoDB, InfluxDB, Pandas, Plotly, Dash"
+    - id: languages
+      enabled: true
+      category: Languages
+      text: "Python, Typescript, SQL, C++, R"
+    - id: awards
+      enabled: true
+      category: Awards
+      text: "Intern Scholarship (2025), AI Scholar (2025), University President's Honor Roll (2024--Present)"
