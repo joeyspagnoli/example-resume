@@ -139,7 +139,7 @@ example-resume/
 │   └── mkdiff.py           # Visual diff engine (used by resume-cli.py diff)
 └── .claude/
     └── skills/
-        └── docx-to-latex.md  # Claude Code skill: convert .docx → LaTeX + YAML
+        └── docx-to-latex.md  # Skill: convert .docx → LaTeX + YAML
 ```
 
 ## Resume CLI
@@ -270,15 +270,10 @@ python tools/resume-cli.py diff -b google
 python tools/resume-cli.py compare
 ```
 
-## Using with Claude Code
+## Importing a Word Resume
 
-This repo includes a Claude Code skill for converting Word documents to LaTeX. In Claude Code:
+The `.claude/skills/docx-to-latex.md` skill converts an existing `.docx` resume into this template's format. It will:
 
-```
-"convert my-resume.docx to latex"
-```
-
-The skill will:
 1. Extract text from your `.docx` (requires `python-docx`: `pip install python-docx`)
 2. Parse sections (education, experience, projects, skills)
 3. Generate both `resume.yaml` and `resume.tex`
