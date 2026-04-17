@@ -150,7 +150,7 @@ def cmd_diff(repo_path: Path, args) -> None:
     shutil.copy2(diff_pdf, output)
 
     console.print(f"[green]Diff PDF generated![/] {output}")
-    console.print("[dim]Red = removed, Blue = added[/]")
+    console.print("[dim]Red = removed, Green = added[/]")
     open_file(output)
 
 

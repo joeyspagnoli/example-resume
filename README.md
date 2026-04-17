@@ -173,7 +173,7 @@ python tools/resume-cli.py diff -b cap1
 python tools/resume-cli.py diff -c "abc1234..def5678"
 ```
 
-The diff PDF is saved to your repo directory (e.g., `diff-evolution.pdf`, `diff-main-vs-google.pdf`) and auto-opens.
+The diff PDF is saved to your repo directory (e.g., `diff-evolution.pdf`, `diff-main-vs-google.pdf`) and auto-opens. **Red = removed, Green = added.**
 
 > **Note**: This uses a custom diff engine (`tools/mkdiff.py`) instead of `latexdiff` because `latexdiff` can't handle the custom resume LaTeX commands (`\resumeItem`, `\resumeSubheading`, etc.).
 

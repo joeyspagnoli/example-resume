@@ -155,7 +155,7 @@ def make_diff_tex(old_tex: str, new_tex: str) -> str:
     # Add diff color definitions
     preamble += r"""
 \definecolor{diffdel}{RGB}{200,30,30}
-\definecolor{diffadd}{RGB}{0,50,200}
+\definecolor{diffadd}{RGB}{0,140,0}
 
 """
 
