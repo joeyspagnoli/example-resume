@@ -271,13 +271,7 @@ python tools/resume-cli.py compare
 
 ## Importing a Word Resume
 
-The `docx-to-latex-skill/docx-to-latex.md` file walks through converting an existing `.docx` resume into this template's format. It will:
-
-1. Extract text from your `.docx` (requires `python-docx`: `pip install python-docx`)
-2. Parse sections (education, experience, projects, skills)
-3. Generate both `resume.yaml` and `resume.tex`
-4. Bold key metrics and technologies for ATS
-5. Compile to PDF
+Use the docx-to-latex skill to have claude code or any coding agent easily convert your Word resume into LaTeX.
 
 ## Tips
 
