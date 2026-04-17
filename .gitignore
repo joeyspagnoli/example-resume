@@ -7,8 +7,9 @@
 *.synctex.gz
 *.synctex(busy)
 
-# Generated PDF (compile locally)
+# Generated PDFs (compile locally)
 *.pdf
+diff-*.pdf
 
 # OS files
 .DS_Store
