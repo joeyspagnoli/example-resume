@@ -7,9 +7,10 @@
 *.synctex.gz
 *.synctex(busy)
 
-# Generated PDFs (compile locally)
-*.pdf
+# LaTeX build PDFs (diff outputs, etc.)
 diff-*.pdf
+
+# Don't ignore resume.pdf — we want it in the repo for preview
 
 # OS files
 .DS_Store
